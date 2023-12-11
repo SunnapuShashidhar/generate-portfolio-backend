@@ -10,7 +10,7 @@ dotenv.config();
 //connecting data base
 ConnectDB();
 app.use(express.json());
-app.use(cors({ origin: "*" })); 
+app.use(cors({ origin: "*" }));
 // app.use("/", (req, res) => {
 //   res.send({ state: 200, message: "working fine..!" });
 // });

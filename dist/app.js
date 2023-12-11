@@ -13,7 +13,7 @@ dotenv_1.default.config();
 //connecting data base
 (0, database_1.default)();
 app.use(express_1.default.json());
-app.use((0, cors_1.default)({ origin: "*" })); //replacing star with frontend url
+app.use((0, cors_1.default)({ origin: "*" }));
 // app.use("/", (req, res) => {
 //   res.send({ state: 200, message: "working fine..!" });
 // });
