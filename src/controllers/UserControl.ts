@@ -150,8 +150,11 @@ export const verifyOtp = async (
       const otpverify = await brcypt.compare(otp, user.otp);
       console.log("otpverify", otpverify);
       if (otpverify) {
-        User.findOneAndUpdate({ email }, { varified: true });
-
+        const update = await User.findOneAndUpdate(
+          { email },
+          { varified: true }
+        );
+        console.log("updated--", update);
         res.send({
           status: 201,
           message: "User details verified usccessfully.!",
@@ -200,13 +203,14 @@ export const SignIn = async (
         res.send({
           status: 201,
           token: jwt.sign(
-            { email, name: user.name },
+            { email, name: user.name, role: user.role },
             String(process.env.JWT_SECRCT_CODE),
             { expiresIn: "30d" }
           ),
           user: {
             name: user.name,
             email: email,
+            role: user.role,
           },
         });
       } else {
@@ -268,7 +272,7 @@ export const ResetPassword = async (req: Request, res: Response) => {
     res.send({ status: 500, mesage: "Oops something went wrong" + error });
   }
 };
-export const verifyToken = async (
+export const userDetails = async (
   req: Request,
   res: Response,
   next: NextFunction

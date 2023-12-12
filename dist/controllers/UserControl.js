@@ -201,10 +201,11 @@ const SignIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             if (verfied) {
                 res.send({
                     status: 201,
-                    token: jsonwebtoken_1.default.sign({ email, name: user.name }, String(process.env.JWT_SECRCT_CODE), { expiresIn: "30d" }),
+                    token: jsonwebtoken_1.default.sign({ email, name: user.name, role: user.role }, String(process.env.JWT_SECRCT_CODE), { expiresIn: "30d" }),
                     user: {
                         name: user.name,
                         email: email,
+                        role: user.role,
                     },
                 });
             }
