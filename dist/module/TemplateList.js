@@ -23,45 +23,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TemplateListSchema = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const User = new mongoose_1.default.Schema({
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    name: {
-        type: String,
-        required: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    profile: {
+const TemplateList = new mongoose_1.Schema({
+    Image: {
         type: Buffer,
     },
-    otp: {
+    title: {
         type: String,
-        required: true,
     },
-    varified: {
-        type: Boolean,
-        default: false,
-    },
-    role: {
+    url: {
         type: String,
-        default: "user",
-    },
-    selectedTemplate: {
-        type: mongoose_1.default.Schema.Types.ObjectId || null,
-        default: null,
-        ref: "templateList",
-    },
-    details: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: "userdetail",
     },
 });
-// User.index({ name: 1 });
-exports.default = mongoose_1.default.model("User", User);
+// TemplateList.index({ title: 1 });
+exports.TemplateListSchema = mongoose_1.default.model("templateList", TemplateList);

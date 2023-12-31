@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const User = new mongoose.Schema({
   email: {
@@ -29,6 +29,19 @@ const User = new mongoose.Schema({
     type: String,
     default: "user",
   },
+  selectedTemplate: {
+    type: mongoose.Schema.Types.ObjectId || null,
+    default: null,
+    ref: "templateList",
+  },
+  details: {
+    type: Schema.Types.ObjectId,
+    ref: "userdetail",
+  },
+  designation: {
+    type: String || null,
+    default: null,
+  },
 });
-
+// User.index({ name: 1 });
 export default mongoose.model("User", User);

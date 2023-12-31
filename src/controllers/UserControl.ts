@@ -4,7 +4,9 @@ import { Request, Response, NextFunction } from "express";
 import brcypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import multer, { Multer } from "multer";
+import { TemplateListSchema } from "../module/TemplateList";
 import { baseURl } from "../config/database";
+import { UserDetailsSchema } from "../module/UserDetails";
 const salt = 12;
 
 export const SignUp = async (
@@ -15,6 +17,8 @@ export const SignUp = async (
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
+    console.log("data-body", req.body);
+    console.log("data-file", req.file);
     if (user) {
       res.send({
         status: 400,
@@ -28,24 +32,17 @@ export const SignUp = async (
           error: "Password and confirm passwrod is matched..!",
         });
       }
+
       const otp = Math.floor(1000 + Math.random() * 9000);
       const hashotp = await brcypt.hash(String(otp), 10);
       req.body.otp = otp;
-      // let storage = multer.diskStorage({
-      //   destination(req, file, callback) {
-      //     callback(null, "upload");
-      //   },
-      //   filename: (req, file, callback) => {
-      //     callback(null, file.filename);
-      //   },
-      // });
-      // const profileImage = multer({ storage });
+
       const newUser = await new User({
         email,
         name,
         password: await brcypt.hash(password, 12),
         role,
-        // profile,
+        profile: req.file?.filename,
         otp: hashotp,
       });
       newUser
@@ -78,30 +75,6 @@ export const SentOTP = async (req: Request, res: Response) => {
   } catch (error) {
     res.send({ status: 500, message: error });
   }
-  // const mailData = {
-  //   from: "sunnapushashidhar@gmail.com",
-  //   to: email,
-  //   subject: "this all about",
-  //   text: "otp is ",
-  //   html: `<p>
-  //   <p>otp to verify your account</p>
-  //   <h1>${generatedOTP}</h1>
-  //   </p>`,
-  // };
-
-  // transporter.sendMail(mailData, (error, info) => {
-  //   if (error) {
-  //     res.send({
-  //       status: 404,
-  //       error: error.message,
-  //     });
-  //   } else {
-  //     res.send({
-  //       status: 201,
-  //       message: info.messageId,
-  //     });
-  //   }
-  // });
 };
 
 export const SendMail = (
@@ -138,6 +111,7 @@ export const SendMail = (
     res.send({ status: 500, message: error });
   }
 };
+
 export const verifyOtp = async (
   req: Request,
   res: Response,
@@ -167,6 +141,7 @@ export const verifyOtp = async (
     res.send({ status: 500, message: error });
   }
 };
+
 export const resendOtp = async (
   req: Request,
   res: Response,
@@ -187,6 +162,7 @@ export const resendOtp = async (
     res.send({ status: 500, message: error });
   }
 };
+
 export const SignIn = async (
   req: Request,
   res: Response,
@@ -226,6 +202,7 @@ export const SignIn = async (
     res.send({ status: 500, error: "something went wrong" + error });
   }
 };
+
 export const ForgotPassword = async (
   req: Request,
   res: Response,
@@ -266,13 +243,15 @@ export const ForgotPassword = async (
     res.send({ status: 500, message: error });
   }
 };
+
 export const ResetPassword = async (req: Request, res: Response) => {
   try {
   } catch (error) {
     res.send({ status: 500, mesage: "Oops something went wrong" + error });
   }
 };
-export const userDetails = async (
+
+export const tokenVerify = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -286,15 +265,29 @@ export const userDetails = async (
         if (err) {
           res.send({ status: 401, message: err.message });
         } else {
-          res.send({
-            status: 201,
-            message: "successfully verified..!",
-            user: decode,
-          });
+          req.body.user = decode;
+          next();
+          // res.send({
+          //   status: 201,
+          //   message: "successfully verified..!",
+          //   user: decode,
+          // });
         }
       }
     );
   } else {
     res.send({ status: 401, message: "invalide token..!" });
   }
+};
+
+export const details = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req.body;
+  // const user = User.find({ email });
+  // TemplateListSchema
+  UserDetailsSchema.find({userId})
+
 };

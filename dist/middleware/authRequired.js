@@ -18,6 +18,10 @@ exports.SingnInRequired = [
     (0, express_validator_1.check)("email").isEmail().withMessage("Email is not valid..!"),
 ];
 const isValidate = (req, res, next) => {
+    const error = (0, express_validator_1.validationResult)(req);
+    if (!error.isEmpty()) {
+        return res.send({ status: 400, message: error.array()[0] });
+    }
     next();
 };
 exports.isValidate = isValidate;

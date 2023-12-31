@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyToken = exports.ResetPassword = exports.ForgotPassword = exports.SignIn = exports.resendOtp = exports.verifyOtp = exports.SendMail = exports.SentOTP = exports.SignUp = void 0;
+exports.tokenVerify = exports.ResetPassword = exports.ForgotPassword = exports.SignIn = exports.resendOtp = exports.verifyOtp = exports.SendMail = exports.SentOTP = exports.SignUp = void 0;
 const authRequired_1 = require("../middleware/authRequired");
 const User_1 = __importDefault(require("../module/User"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -20,9 +20,12 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const database_1 = require("../config/database");
 const salt = 12;
 const SignUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { email } = req.body;
     try {
         const user = yield User_1.default.findOne({ email });
+        console.log("data-body", req.body);
+        console.log("data-file", req.file);
         if (user) {
             res.send({
                 status: 400,
@@ -40,21 +43,12 @@ const SignUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             const otp = Math.floor(1000 + Math.random() * 9000);
             const hashotp = yield bcrypt_1.default.hash(String(otp), 10);
             req.body.otp = otp;
-            // let storage = multer.diskStorage({
-            //   destination(req, file, callback) {
-            //     callback(null, "upload");
-            //   },
-            //   filename: (req, file, callback) => {
-            //     callback(null, file.filename);
-            //   },
-            // });
-            // const profileImage = multer({ storage });
             const newUser = yield new User_1.default({
                 email,
                 name,
                 password: yield bcrypt_1.default.hash(password, 12),
                 role,
-                // profile,
+                profile: (_a = req.file) === null || _a === void 0 ? void 0 : _a.filename,
                 otp: hashotp,
             });
             newUser
@@ -88,29 +82,6 @@ const SentOTP = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         res.send({ status: 500, message: error });
     }
-    // const mailData = {
-    //   from: "sunnapushashidhar@gmail.com",
-    //   to: email,
-    //   subject: "this all about",
-    //   text: "otp is ",
-    //   html: `<p>
-    //   <p>otp to verify your account</p>
-    //   <h1>${generatedOTP}</h1>
-    //   </p>`,
-    // };
-    // transporter.sendMail(mailData, (error, info) => {
-    //   if (error) {
-    //     res.send({
-    //       status: 404,
-    //       error: error.message,
-    //     });
-    //   } else {
-    //     res.send({
-    //       status: 201,
-    //       message: info.messageId,
-    //     });
-    //   }
-    // });
 });
 exports.SentOTP = SentOTP;
 const SendMail = (email, otp, res) => {
@@ -153,7 +124,8 @@ const verifyOtp = (req, res, next) => __awaiter(void 0, void 0, void 0, function
             const otpverify = yield bcrypt_1.default.compare(otp, user.otp);
             console.log("otpverify", otpverify);
             if (otpverify) {
-                User_1.default.findOneAndUpdate({ email }, { varified: true });
+                const update = yield User_1.default.findOneAndUpdate({ email }, { varified: true });
+                console.log("updated--", update);
                 res.send({
                     status: 201,
                     message: "User details verified usccessfully.!",
@@ -266,7 +238,7 @@ const ResetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.ResetPassword = ResetPassword;
-const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const tokenVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.headers["token"];
     if (token) {
         jsonwebtoken_1.default.verify(token, String(process.env.JWT_SECRCT_CODE), (err, decode) => {
@@ -274,11 +246,13 @@ const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
                 res.send({ status: 401, message: err.message });
             }
             else {
-                res.send({
-                    status: 201,
-                    message: "successfully verified..!",
-                    user: decode,
-                });
+                req.body.user = decode;
+                next();
+                // res.send({
+                //   status: 201,
+                //   message: "successfully verified..!",
+                //   user: decode,
+                // });
             }
         });
     }
@@ -286,4 +260,4 @@ const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         res.send({ status: 401, message: "invalide token..!" });
     }
 });
-exports.verifyToken = verifyToken;
+exports.tokenVerify = tokenVerify;
