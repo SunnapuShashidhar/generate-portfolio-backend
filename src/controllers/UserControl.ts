@@ -1,9 +1,8 @@
 import { transporter } from "../middleware/authRequired";
 import User from "../module/User";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, CookieOptions } from "express";
 import brcypt from "bcrypt";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import multer, { Multer } from "multer";
+import jwt from "jsonwebtoken";
 import { TemplateListSchema } from "../module/TemplateList";
 import { baseURl } from "../config/database";
 import { UserDetailsSchema } from "../module/UserDetails";
@@ -17,22 +16,22 @@ export const SignUp = async (
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
-    console.log("data-body", req.body);
-    console.log("data-file", req.file);
+
     if (user) {
       res.send({
         status: 400,
         error: "user with this mail already exist..!",
       });
     } else {
-      const { name, password, role, confirmpass, profile } = req.body;
+      const { name, password, role, confirmpass, profile, profileurl } =
+        req.body;
       if (password !== confirmpass) {
         res.send({
           status: 400,
           error: "Password and confirm passwrod is matched..!",
         });
       }
-
+      // uploadImage(filePath, destination)
       const otp = Math.floor(1000 + Math.random() * 9000);
       const hashotp = await brcypt.hash(String(otp), 10);
       req.body.otp = otp;
@@ -42,13 +41,12 @@ export const SignUp = async (
         name,
         password: await brcypt.hash(password, 12),
         role,
-        profile: req.file?.filename,
+        profile: profileurl,
         otp: hashotp,
       });
       newUser
         .save()
         .then((response) => {
-          console.log(response);
           res.send({
             status: 202,
             response: "user created successfully, Please verify your email..!",
@@ -57,7 +55,6 @@ export const SignUp = async (
           next();
         })
         .catch((error) => {
-          console.log(error);
           res.send({ status: 401, error: error });
         });
     }
@@ -122,13 +119,11 @@ export const verifyOtp = async (
     const user = await User.findOne({ email });
     if (user) {
       const otpverify = await brcypt.compare(otp, user.otp);
-      console.log("otpverify", otpverify);
       if (otpverify) {
         const update = await User.findOneAndUpdate(
           { email },
           { varified: true }
         );
-        console.log("updated--", update);
         res.send({
           status: 201,
           message: "User details verified usccessfully.!",
@@ -176,13 +171,15 @@ export const SignIn = async (
       const { password } = req.body;
       const verfied = await brcypt.compare(password, user.password);
       if (verfied) {
+        const token = jwt.sign(
+          { email, name: user.name, role: user.role },
+          String(process.env.JWT_SECRCT_CODE),
+          { expiresIn: "30d" }
+        );
+        res.cookie("token", token, { expiresIn: "1d" } as CookieOptions);
         res.send({
           status: 201,
-          token: jwt.sign(
-            { email, name: user.name, role: user.role },
-            String(process.env.JWT_SECRCT_CODE),
-            { expiresIn: "30d" }
-          ),
+          token,
           user: {
             name: user.name,
             email: email,

@@ -7,7 +7,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const database_1 = __importDefault(require("./config/database"));
 const cors_1 = __importDefault(require("cors"));
-const UserRoute_1 = __importDefault(require("./routes/UserRoute"));
+const Authenticate_1 = __importDefault(require("./routes/Authenticate"));
 const DashBoard_1 = __importDefault(require("./routes/DashBoard"));
 const app = (0, express_1.default)();
 dotenv_1.default.config();
@@ -15,7 +15,7 @@ dotenv_1.default.config();
 (0, database_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({ origin: "*" }));
-app.use("/api", UserRoute_1.default);
+app.use("/api", Authenticate_1.default);
 app.use("/dash", DashBoard_1.default);
 let PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

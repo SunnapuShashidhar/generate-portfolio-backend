@@ -29,17 +29,22 @@ const User = new mongoose_1.default.Schema({
         type: String,
         required: true,
         unique: true,
+        lowercase: true,
+        trim: true,
     },
     name: {
         type: String,
         required: true,
+        min: 3,
+        max: 20,
+        trim: true,
     },
     password: {
         type: String,
         required: true,
     },
     profile: {
-        type: Buffer,
+        type: String,
     },
     otp: {
         type: String,
@@ -51,6 +56,7 @@ const User = new mongoose_1.default.Schema({
     },
     role: {
         type: String,
+        enum: ["admin", "super-admin", "user"],
         default: "user",
     },
     selectedTemplate: {
@@ -61,6 +67,10 @@ const User = new mongoose_1.default.Schema({
     details: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "userdetail",
+    },
+    designation: {
+        type: String || null,
+        default: null,
     },
 });
 // User.index({ name: 1 });

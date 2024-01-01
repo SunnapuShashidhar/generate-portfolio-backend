@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tokenVerify = exports.ResetPassword = exports.ForgotPassword = exports.SignIn = exports.resendOtp = exports.verifyOtp = exports.SendMail = exports.SentOTP = exports.SignUp = void 0;
+exports.details = exports.tokenVerify = exports.ResetPassword = exports.ForgotPassword = exports.SignIn = exports.resendOtp = exports.verifyOtp = exports.SendMail = exports.SentOTP = exports.SignUp = void 0;
 const authRequired_1 = require("../middleware/authRequired");
 const User_1 = __importDefault(require("../module/User"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const database_1 = require("../config/database");
+const UserDetails_1 = require("../module/UserDetails");
 const salt = 12;
 const SignUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -171,9 +172,11 @@ const SignIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             const { password } = req.body;
             const verfied = yield bcrypt_1.default.compare(password, user.password);
             if (verfied) {
+                const token = jsonwebtoken_1.default.sign({ email, name: user.name, role: user.role }, String(process.env.JWT_SECRCT_CODE), { expiresIn: "30d" });
+                res.cookie("token", token, { expiresIn: "1d" });
                 res.send({
                     status: 201,
-                    token: jsonwebtoken_1.default.sign({ email, name: user.name, role: user.role }, String(process.env.JWT_SECRCT_CODE), { expiresIn: "30d" }),
+                    token,
                     user: {
                         name: user.name,
                         email: email,
@@ -261,3 +264,10 @@ const tokenVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.tokenVerify = tokenVerify;
+const details = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.body;
+    // const user = User.find({ email });
+    // TemplateListSchema
+    UserDetails_1.UserDetailsSchema.find({ userId });
+});
+exports.details = details;

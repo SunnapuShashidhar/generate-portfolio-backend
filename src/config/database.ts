@@ -1,5 +1,6 @@
 import mongoose, { ConnectOptions } from "mongoose";
 import dotenv from "dotenv";
+import admin from "firebase-admin";
 dotenv.config();
 
 const ConnectDB = async () => {
@@ -17,3 +18,4 @@ const ConnectDB = async () => {
 
 export const baseURl = "http://localhost:3000";
 export default ConnectDB;
+

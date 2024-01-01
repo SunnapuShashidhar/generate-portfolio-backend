@@ -1,7 +1,6 @@
 export const checkEmailValidation = (email: string) => {
   const regEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const validEmail = regEx.test(String(email).toLowerCase().trim());
-  console.log("validation", email, "--", validEmail);
   if (!validEmail) {
     return false;
   }

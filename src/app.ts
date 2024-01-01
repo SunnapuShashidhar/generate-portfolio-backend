@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import ConnectDB from "./config/database";
 import cors from "cors";
-import router from "./routes/UserRoute";
+import authRoute from "./routes/Authenticate";
 import dashboard from "./routes/DashBoard";
 
 const app = express();
@@ -13,7 +13,7 @@ ConnectDB();
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
-app.use("/api", router);
+app.use("/api", authRoute);
 app.use("/dash", dashboard);
 let PORT = process.env.PORT || 5000;
 
