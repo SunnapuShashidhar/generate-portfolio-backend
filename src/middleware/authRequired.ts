@@ -9,9 +9,6 @@ export const SignUpRequired = [
   check("password")
     .isStrongPassword()
     .withMessage("password should be strong..!"),
-  check("name")
-    .isLength({ min: 4 })
-    .withMessage("Name should be atleast 4 charators"),
 ];
 
 export const SingnInRequired = [

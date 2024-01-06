@@ -4,7 +4,6 @@ exports.passwrodCalidation = exports.checkEmailValidation = void 0;
 const checkEmailValidation = (email) => {
     const regEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const validEmail = regEx.test(String(email).toLowerCase().trim());
-    console.log("validation", email, "--", validEmail);
     if (!validEmail) {
         return false;
     }

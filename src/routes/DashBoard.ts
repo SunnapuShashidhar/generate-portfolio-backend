@@ -8,4 +8,6 @@ route.get("/", (req, res, next) => {
   res.send({ status: 200, data: data });
 });
 
+
+
 export default route;

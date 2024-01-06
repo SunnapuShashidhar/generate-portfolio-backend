@@ -21,12 +21,9 @@ const database_1 = require("../config/database");
 const UserDetails_1 = require("../module/UserDetails");
 const salt = 12;
 const SignUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const { email } = req.body;
     try {
         const user = yield User_1.default.findOne({ email });
-        console.log("data-body", req.body);
-        console.log("data-file", req.file);
         if (user) {
             res.send({
                 status: 400,
@@ -34,13 +31,14 @@ const SignUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             });
         }
         else {
-            const { name, password, role, confirmpass, profile } = req.body;
+            const { name, password, role, confirmpass, profile, profileurl } = req.body;
             if (password !== confirmpass) {
                 res.send({
                     status: 400,
                     error: "Password and confirm passwrod is matched..!",
                 });
             }
+            // uploadImage(filePath, destination)
             const otp = Math.floor(1000 + Math.random() * 9000);
             const hashotp = yield bcrypt_1.default.hash(String(otp), 10);
             req.body.otp = otp;
@@ -49,13 +47,12 @@ const SignUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
                 name,
                 password: yield bcrypt_1.default.hash(password, 12),
                 role,
-                profile: (_a = req.file) === null || _a === void 0 ? void 0 : _a.filename,
+                profile: profileurl,
                 otp: hashotp,
             });
             newUser
                 .save()
                 .then((response) => {
-                console.log(response);
                 res.send({
                     status: 202,
                     response: "user created successfully, Please verify your email..!",
@@ -63,7 +60,6 @@ const SignUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
                 next();
             })
                 .catch((error) => {
-                console.log(error);
                 res.send({ status: 401, error: error });
             });
         }
@@ -123,10 +119,8 @@ const verifyOtp = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         const user = yield User_1.default.findOne({ email });
         if (user) {
             const otpverify = yield bcrypt_1.default.compare(otp, user.otp);
-            console.log("otpverify", otpverify);
             if (otpverify) {
                 const update = yield User_1.default.findOneAndUpdate({ email }, { varified: true });
-                console.log("updated--", update);
                 res.send({
                     status: 201,
                     message: "User details verified usccessfully.!",
@@ -168,6 +162,12 @@ const SignIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         const { email } = req.body;
         const user = yield User_1.default.findOne({ email });
         if (user) {
+            if (!user.varified) {
+                return res.send({
+                    statue: 403,
+                    message: "user not verified to get the details",
+                });
+            }
             //complete code her
             const { password } = req.body;
             const verfied = yield bcrypt_1.default.compare(password, user.password);

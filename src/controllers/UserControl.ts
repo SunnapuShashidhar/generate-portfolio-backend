@@ -167,6 +167,12 @@ export const SignIn = async (
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (user) {
+      if (!user.varified) {
+        return res.send({
+          statue: 403,
+          message: "user not verified to get the details",
+        });
+      }
       //complete code her
       const { password } = req.body;
       const verfied = await brcypt.compare(password, user.password);

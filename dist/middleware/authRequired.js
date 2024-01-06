@@ -10,9 +10,6 @@ exports.SignUpRequired = [
     (0, express_validator_1.check)("password")
         .isStrongPassword()
         .withMessage("password should be strong..!"),
-    (0, express_validator_1.check)("name")
-        .isLength({ min: 4 })
-        .withMessage("Name should be atleast 4 charators"),
 ];
 exports.SingnInRequired = [
     (0, express_validator_1.check)("email").isEmail().withMessage("Email is not valid..!"),

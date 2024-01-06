@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initalizeApp = void 0;
-const app_1 = require("firebase/app");
+exports.firebaseConfig = void 0;
 // import { getAnalytics } from "firebase/analytics";
 const { apiKey, authDomain, databaseURL, projectId, storageBucket, messagingSenderId, appId, measurementId, } = process.env;
-const firebaseConfig = {
+exports.firebaseConfig = {
     apiKey,
     authDomain,
     databaseURL,
@@ -14,6 +13,5 @@ const firebaseConfig = {
     appId,
     measurementId,
 };
-const initalizeApp = () => (0, app_1.initializeApp)(firebaseConfig);
-exports.initalizeApp = initalizeApp;
+// export const initalizeApp = () => initializeApp(firebaseConfig);
 // export const analytics = getAnalytics(app);
