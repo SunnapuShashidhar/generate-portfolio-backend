@@ -14,7 +14,11 @@ export const SignUpRequired = [
 export const SingnInRequired = [
   check("email").isEmail().withMessage("Email is not valid..!"),
 ];
-
+export const SignAdminREquired = [
+  check("role")
+    .matches("admin" || "super-admin")
+    .withMessage("Only Admin can add templates..!"),
+];
 export const isValidate = (req: Request, res: Response, next: NextFunction) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {

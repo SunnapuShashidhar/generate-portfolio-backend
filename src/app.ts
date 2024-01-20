@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 app.use("/api", authRoute);
-app.use("/dash", dashboard);
+app.use("/dashboard", dashboard);
 let PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

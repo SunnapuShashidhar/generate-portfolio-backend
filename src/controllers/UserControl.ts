@@ -51,7 +51,7 @@ export const SignUp = async (
             status: 202,
             response: "user created successfully, Please verify your email..!",
           });
-
+          req.body.email = email;
           next();
         })
         .catch((error) => {

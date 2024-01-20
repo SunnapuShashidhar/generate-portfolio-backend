@@ -37,7 +37,7 @@ const User = new mongoose.Schema({
   selectedTemplate: {
     type: mongoose.Schema.Types.ObjectId || null,
     default: null,
-    ref: "templateList",
+    ref: "templatelist",
   },
   details: {
     type: Schema.Types.ObjectId,
@@ -50,4 +50,4 @@ const User = new mongoose.Schema({
 });
 // User.index({ name: 1 });
 
-export default mongoose.model("User", User);
+export default mongoose.model("user", User);

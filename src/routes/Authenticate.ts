@@ -34,11 +34,12 @@ let storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  storageBucket: process.env.storageBucket,
-});
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: process.env.storageBucket,
+  });
+}
 export async function uploadImage(
   req: Request,
   res: Response,
@@ -57,8 +58,8 @@ export async function uploadImage(
   req.body.profileurl = downloadURL[0];
   next();
 }
-const storage1 = admin.storage();
-const bucket = storage1.bucket();
+export const storage1 = admin.storage();
+export const bucket = storage1.bucket();
 router.get("/", (req, res, next) => {
   const data = TemplateListSchema.find({});
   res.send({ status: 200, data: data });
@@ -82,4 +83,5 @@ router.get("/user", tokenVerify);
 router.put("/otpverify", verifyOtp);
 router.put("/re-send-otp", resendOtp);
 router.post("/forgot-password", ForgotPassword);
+
 export default router;

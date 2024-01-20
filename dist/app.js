@@ -16,7 +16,7 @@ dotenv_1.default.config();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({ origin: "*" }));
 app.use("/api", Authenticate_1.default);
-app.use("/dash", DashBoard_1.default);
+app.use("/dashboard", DashBoard_1.default);
 let PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`App is running on ${PORT}`);

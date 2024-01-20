@@ -57,6 +57,7 @@ const SignUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
                     status: 202,
                     response: "user created successfully, Please verify your email..!",
                 });
+                req.body.email = email;
                 next();
             })
                 .catch((error) => {

@@ -62,7 +62,7 @@ const User = new mongoose_1.default.Schema({
     selectedTemplate: {
         type: mongoose_1.default.Schema.Types.ObjectId || null,
         default: null,
-        ref: "templateList",
+        ref: "templatelist",
     },
     details: {
         type: mongoose_1.Schema.Types.ObjectId,
@@ -74,4 +74,4 @@ const User = new mongoose_1.default.Schema({
     },
 });
 // User.index({ name: 1 });
-exports.default = mongoose_1.default.model("User", User);
+exports.default = mongoose_1.default.model("user", User);
